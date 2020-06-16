@@ -8,6 +8,8 @@ aws dynamodb create-table \
     --key-schema \
         AttributeName=projectName,KeyType=HASH \
         AttributeName=projectType,KeyType=RANGE \
+    --billing-mode=PAY_PER_REQUEST
+    
     --provisioned-throughput \
         ReadCapacityUnits=10,WriteCapacityUnits=5
 
@@ -27,9 +29,9 @@ aws dynamodb update-item \
 
 aws dynamodb update-item \
     --table-name Project_pei \
-    --key '{ "projectName": {"S": "productName3”}, "projectType": {"S": "test3”}}' \
-    --update-expression "SET startDate = :q2" \
-    --expression-attribute-values '{":q2":{"S":"2020-09-099”}}' \
+    --key '{ "projectName": {"S": "productName3"}, "projectType": {"S": "test3"}}' \
+    --update-expression "SET startDate = :q2" \ 
+    --expression-attribute-values '{":q2":{"S":"2020-09-099"}}' \
     --return-values ALL_NEW
 ```
 
@@ -60,7 +62,7 @@ aws dynamodb update-item \
 ```js
 aws dynamodb get-item --consistent-read \
     --table-name Project_pei \
---key '{ "projectName": {"S": "project2”}, "projectType": {"S": "test2"}}'
+--key '{ "projectName": {"S": "project2"}, "projectType": {"S": "test2"}}'
 ```
 **6. 查询数据: 根据分区键和排序键查询数据, 尝试通过memberName查询数据**
 
@@ -68,7 +70,7 @@ aws dynamodb get-item --consistent-read \
 aws dynamodb query \
     --table-name Project_pei \
     --key-condition-expression "projectName = :name" \
-    --expression-attribute-values  '{":name”:{"S”:”productName3”}}'
+    --expression-attribute-values  '{":name":{"S":"productName3"}}'
 ```
 
  
@@ -86,7 +88,7 @@ aws dynamodb update-table \
  --attribute-definitions AttributeName=memberName,AttributeType=S \
     --global-secondary-index-updates \
     "[{\"Create\":{\"IndexName\": \"memberName-index\",\"KeySchema\":[{\"AttributeName\":\"memberName\",\"KeyType\":\"HASH\"}], \
-    \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5      },\"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
+    \"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 
 aws dynamodb describe-table --table-name Project_pei | grep IndexStatus
 ```
